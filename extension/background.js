@@ -19,8 +19,44 @@ const injectContentScript = async (tab) => {
 };
 
 chrome.runtime.onInstalled.addListener(() => {
-  // default state goes here
-  // this runs ONE TIME ONLY
+  const defaultTemplates = [
+    {
+      name: "raw",
+      template: "{prompt}",
+    },
+
+    {
+      name: "bullet-points",
+      template: "Give me a list of bullet points.\n\n{prompt}",
+    },
+
+    {
+      name: "summarize",
+      template: "{prompt}\n\nWrite a short summarization regarding this topic",
+    },
+
+    {
+      name: "translate",
+      template: "{prompt}\n\nTranslate this to {target_language}",
+    },
+
+    {
+      name: "rephrase",
+      template: "{prompt}\n\nRephrase text above. Try to be creative.",
+    },
+
+    {
+      name: "custom",
+      template: "{prompt}",
+    },
+  ];
+  defaultTemplates.forEach((item) => {
+    const keyValue = {};
+    keyValue[item.name] = item.template;
+    chrome.storage.local.set(keyValue);
+  });
+
+  chrome.storage.local.set({ "selected-template": "raw" });
 });
 
 chrome.commands.onCommand.addListener(async (command, tab) => {
@@ -93,7 +129,15 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
         });
       }
     } catch (e) {
-      console.log(e);
+      chrome.tabs.query(
+        {
+          active: true,
+          currentWindow: true,
+        },
+        function (tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
+        }
+      );
 
       return; // ignoring an unsupported page like chrome://extensions
     }
