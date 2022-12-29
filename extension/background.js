@@ -88,60 +88,72 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
         }
       );
 
-      const res = await fetch("http://localhost:8081/prompt", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: result,
-        }),
-      });
-      const data = await res.json();
+      chrome.storage.local.get("selected-template", async function (items) {
+        const selectedTemplate = items["selected-template"];
+        chrome.storage.local.get(selectedTemplate, async function (items) {
+          const savedTemplate = items[selectedTemplate].replace(
+            "{prompt}",
+            result
+          );
 
-      const serverRes = data.choices[0].text;
+          const res = await fetch("http://localhost:8081/prompt", {
+            method: "POST",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: savedTemplate,
+            }),
+          });
+          const data = await res.json();
 
-      if (serverRes) {
-        chrome.tabs.query(
-          {
-            active: true,
-            currentWindow: true,
-          },
-          function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
+          const serverRes = data.choices[0].text;
+
+          if (serverRes) {
+            chrome.tabs.query(
+              {
+                active: true,
+                currentWindow: true,
+              },
+              function (tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
+              }
+            );
+
+            const padding = Math.round(width * 0.3);
+
+            chrome.windows.create({
+              left: Math.round(padding),
+              top: Math.round(height * 0.2),
+              width: Math.round(width - padding * 2),
+              height: Math.round(height * 0.6),
+              type: "panel",
+              url: "./toast.html",
+            });
+
+            chrome.storage.local.set({
+              "chatgpt-extension-popup-content": serverRes,
+            });
           }
-        );
-
-        const padding = Math.round(width * 0.3);
-
-        chrome.windows.create({
-          left: Math.round(padding),
-          top: Math.round(height * 0.2),
-          width: Math.round(width - padding * 2),
-          height: Math.round(height * 0.6),
-          type: "panel",
-          url: "./toast.html",
         });
-
-        chrome.storage.local.set({
-          "chatgpt-extension-popup-content": serverRes,
-        });
-      }
-    } catch (e) {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        function (tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
-        }
-      );
-
-      return; // ignoring an unsupported page like chrome://extensions
-    }
+      });
+    } catch (e) {}
   }
+
+  setTimeout(() => {
+    chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true,
+      },
+      function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
+      }
+    );
+
+    return;
+  }, 5000);
 });
 
 chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
