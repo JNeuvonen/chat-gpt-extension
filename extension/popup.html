@@ -1,11 +1,164 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>ChatGPT</title>
+    <title>ChatGPT Enchancer</title>
+    <link rel="stylesheet" href="popup.css" />
     <script src="popup.js"></script>
   </head>
   <body>
-    <h1>ChatGPT It</h1>
-    <button id="checkPage">Query</button>
+    <div id="template-editor" style="display: none">
+      <div style="position: relative; background-color: white">
+        <div style="display: flex; align-items: center; column-gap: 8px">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24px"
+            height="24px"
+            style="cursor: pointer"
+            id="template-editor-return-btn"
+          >
+            <path
+              d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 8.7070312 7.2929688 L 7.2929688 8.7070312 L 10.585938 12 L 7.2929688 15.292969 L 8.7070312 16.707031 L 12 13.414062 L 15.292969 16.707031 L 16.707031 15.292969 L 13.414062 12 L 16.707031 8.7070312 L 15.292969 7.2929688 L 12 10.585938 L 8.7070312 7.2929688 z"
+            />
+          </svg>
+
+          <h1 id="template-editor-title"></h1>
+        </div>
+        <textarea
+          style="width: 100%; min-height: 150px"
+          id="edit-template-textarea"
+        ></textarea>
+        <div>
+          <button
+            class="button-default-styles"
+            style="width: 100%"
+            id="template-save-btn"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="popup-body" style="margin-top: 25px">
+      <h1>Select Template</h1>
+
+      <div id="popup-checkbox-container">
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="raw" value="raw" />
+            <span style="font-size: 16px">Raw</span>
+          </div>
+
+          <div style="cursor: pointer" id="raw-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="bullet-points" value="bullet-points" />
+            <span style="font-size: 16px">Bullet points</span>
+          </div>
+
+          <div style="cursor: pointer" id="bullet-points-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="summarize" value="summarize" />
+            <span style="font-size: 16px">Summarize</span>
+          </div>
+
+          <div style="cursor: pointer" id="summarize-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="translate" value="translate" />
+            <span style="font-size: 16px">Translate</span>
+          </div>
+          <div style="cursor: pointer" id="translate-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="rephrase" value="rephrase" />
+            <span style="font-size: 16px">Rephrase</span>
+          </div>
+          <div style="cursor: pointer" id="rephrase-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div id="popup-checkbox">
+          <div style="display: flex; align-items: center; column-gap: 8px">
+            <input type="checkbox" id="custom" value="custom" />
+            <span style="font-size: 16px">Custom</span>
+          </div>
+          <div style="cursor: pointer" id="custom-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 50 50"
+              width="20px"
+              height="20px"
+            >
+              <path
+                d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
