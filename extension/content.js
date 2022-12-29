@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(async function (
   request,
-  sender,
+  _sender,
   sendResponse
 ) {
   if (request === "prompt_made") {
