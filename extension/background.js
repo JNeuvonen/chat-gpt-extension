@@ -107,8 +107,12 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
             }),
           });
           const data = await res.json();
-
           const serverRes = data.choices[0].text;
+
+          const savedPrompt = {};
+          savedPrompt["used-prompt"] = savedTemplate;
+
+          chrome.storage.local.set(savedPrompt);
 
           if (serverRes) {
             chrome.tabs.query(
@@ -151,8 +155,6 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
         chrome.tabs.sendMessage(tabs[0].id, "prompt_finished");
       }
     );
-
-    return;
   }, 5000);
 });
 
