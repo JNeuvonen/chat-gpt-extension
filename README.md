@@ -1,4 +1,4 @@
-How it works?
+# How it works?
 
 It allows users to prompt openAI GPT 3.0 conveniently through hotkeys while they are browsing the web. Highlight text from a webpage, select the query template, press a hotkey, and a popup appears with the GPT 3.0 answer.
 
